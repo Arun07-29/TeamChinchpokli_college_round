@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "general": {
+    "theme": "dark",
+    "show_preview": true,
+    "auto_start": false
+  },
+  "camera": {
+    "index": 0
+  },
+  "gestures": {
+    "enabled": true
+  },
+  "cursor": {
+    "speed": 1.0,
+    "smoothing": 0.7,
+    "steady_px": 2,
+    "area": {
+      "left": 0.08,
+      "right": 0.92,
+      "top": 0.08,
+      "bottom": 0.92
+    }
+  },
+  "click": {
+    "enabled": true,
+    "pinch_threshold": 0.045,
+    "cooldown": 0.75,
+    "right_click_gesture": "thumb_middle",
+    "double_click_gesture": "thumb_ring"
+  },
+  "scroll": {
+    "sensitivity": 1.0,
+    "deadzone": 0.04,
+    "invert": false,
+    "two_finger": true
+  },
+  "voice": {
+    "enabled": true,
+    "microphone": "",
+    "activation": "wake_phrase",
+    "wake_phrase": "hey handsfree",
+    "listen_window": 8.0,
+    "energy_threshold": 0,
+    "apps": {
+      "notepad": "notepad.exe",
+      "calculator": "calc.exe",
+      "file explorer": "explorer.exe",
+      "paint": "mspaint.exe",
+      "command prompt": "cmd.exe",
+      "task manager": "taskmgr.exe",
+      "settings": "ms-settings:"
+    }
+  },
+  "speech": {
+    "engine": "google",
+    "language": "en-US",
+    "vosk_model": "vosk-model-small-en-us-0.15"
+  },
+  "dictation": {
+    "punctuation_commands": true,
+    "auto_capitalize": true,
+    "stop_phrase": "stop dictation"
+  },
+  "browser": {
+    "enabled": true,
+    "search_engine": "google",
+    "home_page": "https://www.google.com",
+    "confirm_risky": true
+  },
+  "hotkeys": {
+    "enabled": true,
+    "toggle_scroll": "<f8>",
+    "push_to_talk": "<f9>",
+    "emergency_stop": "<f12>"
+  }
+}
