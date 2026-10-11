@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntentLock V1 — Interaction Test Page</title>
+  <meta name="description" content="Test page for validating the IntentLock Chrome extension: cursor control, voice commands, element targeting, dwell clicks, and IntentShield high-impact confirmation." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f2f5; color: #222;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a6fdb, #007bff);
+      color: #fff; padding: 18px 32px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header-badge {
+      background: rgba(255,255,255,0.25); border-radius: 8px;
+      padding: 6px 12px; font-weight: 700; font-size: 18px;
+    }
+    header h1 { margin: 0; font-size: 20px; font-weight: 700; }
+    header p  { margin: 2px 0 0; font-size: 13px; opacity: .85; }
+
+    /* ── Layout ── */
+    .container { max-width: 900px; margin: 28px auto; padding: 0 20px; }
+
+    section {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      padding: 22px 26px; margin-bottom: 22px;
+    }
+    h2 { margin: 0 0 14px; font-size: 16px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+    .badge { background: #e8f0fe; color: #1a6fdb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+
+    /* ── Links ── */
+    nav a {
+      display: inline-block; margin: 0 10px 8px 0;
+      color: #1a6fdb; text-decoration: none; font-size: 15px;
+      padding: 4px 0; border-bottom: 2px solid transparent; transition: border-color .15s;
+    }
+    nav a:hover { border-bottom-color: #1a6fdb; }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    button {
+      padding: 9px 18px; border: none; border-radius: 7px;
+      font: 600 13px sans-serif; cursor: pointer; transition: transform .1s, opacity .15s;
+    }
+    button:hover { opacity: .88; }
+    button:active { transform: scale(.97); }
+    .btn-primary { background: #007bff; color: #fff; }
+    .btn-success { background: #28a745; color: #fff; }
+    .btn-warning { background: #ffc107; color: #333; }
+    .btn-danger  { background: #dc3545; color: #fff; }
+    .btn-outline { background: #fff; color: #007bff; border: 1.5px solid #007bff; }
+
+    /* ── Form ── */
+    form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 3px; color: #444; }
+    form input, form select, form textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid #d0d7e0; border-radius: 6px;
+      font: 14px sans-serif; margin-bottom: 12px; outline: none; transition: border-color .15s;
+    }
+    form input:focus, form select:focus, form textarea:focus { border-color: #007bff; }
+
+    /* ── High-impact zone ── */
+    .danger-zone {
+      border: 2px solid #dc3545; border-radius: 8px; padding: 16px 20px; margin-top: 10px;
+      background: #fff5f5;
+    }
+    .danger-zone p { margin: 0 0 12px; font-size: 13px; color: #666; }
+
+    /* ── Result banner ── */
+    .result-banner {
+      display: none; margin-top: 14px; padding: 12px 16px;
+      border-radius: 6px; font-size: 13px; font-weight: 500;
+      background: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+    }
+    .result-banner.error { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+
+    /* ── Event log ── */
+    #event-log-list {
+      list-style: none; margin: 0; padding: 0;
+      max-height: 160px; overflow-y: auto;
+      font: 12px/1.6 'Courier New', monospace;
+    }
+    #event-log-list li {
+      padding: 3px 8px; border-bottom: 1px solid #f0f0f0;
+    }
+    #event-log-list li:nth-child(odd) { background: #f8f9fa; }
+    #log-empty { color: #aaa; font-size: 13px; font-style: italic; }
+
+    /* ── Scroll target ── */
+    .scroll-pad {
+      height: 360px;
+      background: linear-gradient(180deg, #e9f5ff 0%, #cfe2ff 50%, #b6d4fe 100%);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 12px;
+      font-size: 18px; color: #004085; border-radius: 8px;
+      border: 1px solid #b6d4fe;
+    }
+    .scroll-pad p { margin: 0; }
+
+    /* ── Counter ── */
+    #click-counter {
+      font: 700 28px sans-serif; color: #007bff;
+      padding: 12px 24px; border: 2px solid #cce5ff;
+      border-radius: 8px; display: inline-block; min-width: 60px; text-align: center;
+    }
+
+    /* ── Hint text ── */
+    .hint { font-size: 12px; color: #888; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">IL</div>
+  <div>
+    <h1>IntentLock V1 — Interaction Test Page</h1>
+    <p>Validate cursor control · voice commands · element targeting · dwell clicks · IntentShield</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── Search Field ── -->
+  <section id="section-search">
+    <h2>🔍 Search Field <span class="badge">Voice: "focus search" → "type hello world"</span></h2>
+    <input
+      type="search"
+      id="search-field"
+      placeholder="Search anything…"
+      aria-label="Search"
+      oninput="logEvent('search-field', 'input: ' + this.value.slice(0,30))"
+    />
+    <p class="hint">Tests: FOCUS command + TYPE command.</p>
+  </section>
+
+  <!-- ── Navigation Links ── -->
+  <section id="section-links">
+    <h2>🔗 Navigation Links <span class="badge">Voice: "show targets" → "select 1"</span></h2>
+    <nav>
+      <a id="link-wikipedia" href="https://en.wikipedia.org/wiki/Main_Page" target="_blank" rel="noopener" onclick="logEvent('link-click', 'Wikipedia')">Wikipedia</a>
+      <a id="link-bbc" href="https://www.bbc.com/news" target="_blank" rel="noopener" onclick="logEvent('link-click', 'BBC News')">BBC News</a>
+      <a id="link-github" href="https://github.com" target="_blank" rel="noopener" onclick="logEvent('link-click', 'GitHub')">GitHub</a>
+      <a id="link-chrome-docs" href="https://developer.chrome.com/docs/extensions/" target="_blank" rel="noopener" onclick="logEvent('link-click', 'Chrome Docs')">Chrome Extension Docs</a>
+      <a id="link-google" href="https://www.google.com" target="_blank" rel="noopener" onclick="logEvent('link-click', 'Google')">Google</a>
+    </nav>
+    <p class="hint">Tests: numbered targeting, name targeting, CLICK_TEXT.</p>
+  </section>
+
+  <!-- ── Buttons ── -->
+  <section id="section-buttons">
+    <h2>🔘 Button Interactions <span class="badge">Voice: "click Primary Action"</span></h2>
+    <div class="btn-row">
+      <button id="btn-primary"  class="btn-primary"  onclick="flash(this,'Clicked Primary!');   logEvent('btn-click','Primary Action')">Primary Action</button>
+      <button id="btn-confirm"  class="btn-success"  onclick="flash(this,'Confirmed!');          logEvent('btn-click','Confirm')">Confirm</button>
+      <button id="btn-caution"  class="btn-warning"  onclick="flash(this,'Clicked Warning!');   logEvent('btn-click','Caution')">Caution</button>
+      <button id="btn-alert"    class="btn-danger"   onclick="flash(this,'Clicked Alert!');     logEvent('btn-click','Alert')">Alert</button>
+      <button id="btn-counter"  class="btn-outline"  onclick="incrementCounter();               logEvent('btn-click','Counter')">Increment Counter</button>
+    </div>
+    <div style="margin-top:14px; display:flex; align-items:center; gap:16px;">
+      <span style="font-size:13px; color:#555;">Click counter:</span>
+      <span id="click-counter">0</span>
+      <button class="btn-outline" style="font-size:11px; padding:4px 10px;" onclick="resetCounter()">Reset</button>
+    </div>
+    <p class="hint">Tests: CLICK_TEXT voice command, dwell-click, numbered targeting.</p>
+  </section>
+
+  <!-- ── Contact Form ── -->
+  <section id="section-form">
+    <h2>📋 Contact Form <span class="badge">Tests form submission + IntentShield</span></h2>
+    <form id="contact-form" onsubmit="handleFormSubmit(event)" novalidate>
+      <label for="name-field">Name</label>
+      <input type="text" id="name-field" name="name" placeholder="Your name" autocomplete="name" />
+
+      <label for="email-field">Email</label>
+      <input type="email" id="email-field" name="email" placeholder="you@example.com" autocomplete="email" />
+
+      <label for="topic-select">Topic</label>
+      <select id="topic-select" name="topic">
+        <option>General feedback</option>
+        <option>Bug report</option>
+        <option>Feature request</option>
+        <option>Accessibility issue</option>
+      </select>
+
+      <label for="message-field">Message</label>
+      <textarea id="message-field" name="message" rows="3" placeholder="Your message…"></textarea>
+
+      <div class="btn-row">
+        <button id="form-submit-btn" class="btn-primary" type="submit">Submit Form</button>
+        <button id="form-reset-btn" class="btn-warning" type="reset" onclick="logEvent('form','reset')">Reset</button>
+      </div>
+    </form>
+    <div id="form-result" class="result-banner"></div>
+    <p class="hint">Tests: FOCUS, TYPE, "submit" keyword triggers IntentShield confirmation.</p>
+  </section>
+
+  <!-- ── IntentShield High-Impact Actions ── -->
+  <section id="section-shield">
+    <h2>⚠️ IntentShield — High-Impact Actions <span class="badge">Dwell-click should show confirm prompt</span></h2>
+    <p style="font-size:13px;color:#555; margin: 0 0 10px;">
+      These buttons contain keywords IntentShield watches for (<code>delete</code>, <code>buy</code>, <code>place order</code>).
+      Dwell-clicking them should trigger a confirmation overlay before activating.
+    </p>
+    <div class="danger-zone">
+      <p>Safe simulated actions — no real data is deleted or purchased on this test page.</p>
+      <div class="btn-row">
+        <button id="btn-delete-account" class="btn-danger"   onclick="flash(this,'Account deleted (simulated)'); logEvent('shield','delete-account')">Delete Account</button>
+        <button id="btn-buy-now"        class="btn-danger"   onclick="flash(this,'Purchase confirmed (simulated)'); logEvent('shield','buy-now')">Buy Now — $99</button>
+        <button id="btn-place-order"    class="btn-primary"  onclick="flash(this,'Order placed (simulated)'); logEvent('shield','place-order')">Place Order</button>
+        <button id="btn-send-funds"     class="btn-warning"  onclick="flash(this,'Funds sent (simulated)'); logEvent('shield','send-funds')">Send $500</button>
+      </div>
+    </div>
+    <p class="hint">
+      Expected: dwell-click shows "⚠️ Confirm Action" overlay.
+      Direct voice "click Delete Account" also triggers the overlay when shieldConfirmEnabled is on.
+    </p>
+  </section>
+
+  <!-- ── Scroll Test ── -->
+  <section id="section-scroll">
+    <h2>↕️ Scroll Test <span class="badge">Voice: "scroll down" / "scroll up" / "scroll to top"</span></h2>
+    <p style="font-size:13px;color:#555; margin: 0 0 12px;">
+      Scroll the page using voice commands. The page must be long enough for scrolling to be visible.
+    </p>
+    <div class="scroll-pad">
+      <p>⬇ Scroll content zone ⬆</p>
+      <p style="font-size:14px; opacity:.7;">Say "scroll down", "scroll up", "scroll to bottom", "scroll to top"</p>
+    </div>
+  </section>
+
+  <!-- ── Event Log ── -->
+  <section id="section-log">
+    <h2>📋 Interaction Event Log <span class="badge">Resets on page reload</span></h2>
+    <p style="font-size:13px;color:#555; margin: 0 0 10px;">
+      This in-page log records clicks, form events, and navigations to verify the extension is working correctly.
+      It is not persisted anywhere — it only lives in this browser tab's memory.
+    </p>
+    <ul id="event-log-list">
+      <li id="log-empty">No events recorded yet. Interact with the page to see log entries.</li>
+    </ul>
+    <div style="margin-top:10px;">
+      <button class="btn-outline" onclick="clearLog()" style="font-size:11px; padding:5px 12px;">Clear Log</button>
+    </div>
+  </section>
+
+</div><!-- /.container -->
+
+<script>
+  // ── Helpers ─────────────────────────────────────────────────────
+  let clickCount = 0;
+
+  function flash(btn, msg) {
+    const orig = btn.textContent;
+    const origBg = btn.style.background;
+    btn.textContent = '✓ ' + msg;
+    btn.style.opacity = '0.75';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.opacity = '1';
+    }, 1800);
+  }
+
+  function incrementCounter() {
+    clickCount++;
+    document.getElementById('click-counter').textContent = clickCount;
+  }
+
+  function resetCounter() {
+    clickCount = 0;
+    document.getElementById('click-counter').textContent = '0';
+    logEvent('counter', 'reset');
+  }
+
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    const box = document.getElementById('form-result');
+    box.className = 'result-banner';
+    box.style.display = 'block';
+    box.textContent = '✅ Form submitted successfully! (Test page — no data was sent.)';
+    logEvent('form', 'submitted');
+    setTimeout(() => { box.style.display = 'none'; }, 5000);
+  }
+
+  // ── Event log ──────────────────────────────────────────────────
+  const logList = document.getElementById('event-log-list');
+  const logEmpty = document.getElementById('log-empty');
+  let logCount = 0;
+
+  function logEvent(source, detail) {
+    if (logEmpty) logEmpty.remove();
+    logCount++;
+    const ts = new Date().toLocaleTimeString(undefined, { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const li = document.createElement('li');
+    li.textContent = `[${ts}] #${logCount}  ${source}  →  ${detail}`;
+    logList.prepend(li);
+    // Cap at 50 entries
+    while (logList.children.length > 50) logList.removeChild(logList.lastChild);
+  }
+
+  function clearLog() {
+    logList.innerHTML = '<li id="log-empty">Log cleared.</li>';
+    logCount = 0;
+  }
+
+  // Log all clicks on the page (catches IntentLock-synthesised clicks too)
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    const tag = t.tagName?.toLowerCase() ?? 'unknown';
+    const label = t.textContent?.trim().slice(0, 40)
+      || t.getAttribute('aria-label')
+      || t.id
+      || tag;
+    // Don't double-log buttons that already have onclick handlers
+    if (!['button','a'].includes(tag)) {
+      logEvent(`click:${tag}`, label);
+    }
+  }, true);
+</script>
+</body>
+</html>
