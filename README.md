@@ -6,14 +6,19 @@ Free to use. Speech defaults to Google's free web recogniser (needs internet); a
 > Experimental prototype, not a certified assistive device. Gestures and speech can misfire — don't use it for
 > payments or other sensitive actions. Pinch-clicking and voice control are **OFF** until you turn them on.
 
-## Setup (Windows, PyCharm)
-1. Extract the ZIP and open the `Handsfree` folder in PyCharm. Use a **Python 3.11 (64-bit)** interpreter.
-2. In the terminal:
+## Setup (Windows)
+Needs **Python 3.12 (64-bit)**. The `.venv` folder is not in the repo — each person creates their own:
 ```powershell
+git clone https://github.com/Arun07-29/TeamChinchpokli_college_round.git
+cd TeamChinchpokli_college_round
+python -m venv .venv
+.venv\Scripts\activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python main.py
 ```
+If `activate` is blocked, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, then try again.
+In PyCharm / VS Code, select `.venv\Scripts\python.exe` as the interpreter.
 If `PyAudio` fails to install, voice features will show a clear message in the dashboard; hand control still works.
 
 ## First run — 5 steps
@@ -71,7 +76,7 @@ Note: the Stage 2 ZIP had only the gesture script, so the voice and browser modu
 ## Troubleshooting
 * **"Hey handsfree" not responding** – check: (1) Voice control switch is ON and you pressed Start; (2) the Microphone row says *Listening*; (3) the Activity box shows `Heard "..."` — if it shows something different from what you said, speak closer/slower or use *Talk now* (push-to-talk) instead; (4) Google engine needs internet.
 * **Camera won't open** – close other apps using it; Windows Settings → Privacy → Camera. Try another camera in Settings.
-* **"Wrong MediaPipe version"** – `pip install mediapipe==0.10.21` (needs Python 3.11).
+* **"Wrong MediaPipe version"** – `pip install mediapipe==0.10.21` (needs Python 3.11 or 3.12).
 * **Voice: "model not found"** – Settings → Dictation → *Download model*, or switch the engine to Google (sends audio online).
 * **Voice: microphone unavailable** – Windows privacy settings for the microphone; reinstall `PyAudio`.
 * **Browser actions** use the default browser and send keyboard shortcuts to the window in front, so focus it first.
